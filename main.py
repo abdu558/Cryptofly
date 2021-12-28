@@ -1,4 +1,6 @@
-import pygame, sys,random
+import pygame
+import sys
+import random
 
 def draw_floor():
     screen.blit(floor_surface,(floor_x_pos,900))
@@ -66,22 +68,22 @@ screen = pygame.display.set_mode((576,1024)) #screen
 clock = pygame.time.Clock() # this just helps limit frame rate
 game_font = pygame.font.Font('04B_19.TTF',40)
 # variables
-gravity = 0.25
+gravity = 0.4
 bird_movement = 0
 game_active = True
 score = 0
 high_score = 0
 
-bg_surface = pygame.image.load('assets/background-day.png').convert()
+bg_surface = pygame.image.load('assets/background-crypto-2.png').convert()
 bg_surface = pygame.transform.scale2x(bg_surface)
 
 floor_surface = pygame.image.load('assets/base.png').convert()
 floor_surface = pygame.transform.scale2x(floor_surface)
 floor_x_pos = 0
 
-bird_downflap = pygame.transform.scale2x(pygame.image.load('assets/bluebird-downflap.png').convert_alpha())
-bird_midflap = pygame.transform.scale2x(pygame.image.load('assets/bluebird-midflap.png').convert_alpha())
-bird_upflap = pygame.transform.scale2x(pygame.image.load('assets/bluebird-upflap.png').convert_alpha())
+bird_downflap = pygame.transform.scale2x(pygame.image.load('assets/up-3.png').convert_alpha())
+bird_midflap = pygame.transform.scale2x(pygame.image.load('assets/mid.png').convert_alpha())
+bird_upflap = pygame.transform.scale2x(pygame.image.load('assets/down.png').convert_alpha())
 bird_frames = [bird_downflap,bird_midflap,bird_upflap]
 bird_index = 0
 bird_surface = bird_frames[bird_index]
