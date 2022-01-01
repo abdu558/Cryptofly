@@ -36,7 +36,7 @@ def check_collison(pipes):
 
 
 def rotate_bird(bird):
-	new_bird = pygame.transform.rotozoom(bird,-bird_movement * 3,1)
+	new_bird = pygame.transform.rotozoom(bird,-bird_movement * 5,1) # *% is how fast it animates
 	return new_bird
 
 def bird_animation():
@@ -153,11 +153,14 @@ while True:
       high_score = update_score(score,high_score)
       score_display('game_over')
   #Floor
-  floor_x_pos -=1
+  floor_x_pos -=5
+  if floor_x_pos > 0:
+      floor_x_pos = 10
   # This just has two floors and when floor is too far off, change in x axis
   draw_floor()
   if floor_x_pos <= - 576:
       floor_x_pos = 0
    # puts a surface on another surface
   pygame.display.update()
-  clock.tick(120) #can only run under 120 fps
+  fps=80
+  clock.tick(fps + 10) #can only run under 120 fps
