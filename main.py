@@ -2,22 +2,13 @@ import pygame
 import sys
 import random
 
-def draw_floor():
-    screen.blit(floor_surface,(floor_x_pos,900))
-    screen.blit(floor_surface,(floor_x_pos+576,900))
-
 def create_pipe():
     random_pipe_position = random.choice(pipe_height)
     bottom_pipe = pipe_surface.get_rect(midtop = (700,random_pipe_position))
     top_pipe =pipe_surface.get_rect(midbottom=(700,random_pipe_position-400)) # the minus is the gap between the two tunnels
     return bottom_pipe,top_pipe
 
-def move_pipes(pipes):
-    for pipe in pipes:
-        pipe.centerx -= 5
-    return pipes
-
-def draw_pipes(pipes):
+def pipes(pipes):
     for pipe in pipes:
         if pipe.bottom >=1024:
             screen.blit(pipe_surface,pipe)
@@ -25,83 +16,55 @@ def draw_pipes(pipes):
             flip_pipe = pygame.transform.flip(pipe_surface,False,True) #flip in y not x direction
             screen.blit(flip_pipe,pipe)
 
-def check_collison(pipes):
+def collision(pipes):
     for pipe in pipes:
-        if bird_rect.colliderect(pipe):
+        if rect_item.colliderect(pipe):
             return False
 
-    if bird_rect.top <= -100 or bird_rect.bottom >= 900:
+    if rect_item.top <= -100 or rect_item.bottom >= 900:
         return False
     return True
-
-
-def rotate_bird(bird):
-	new_bird = pygame.transform.rotozoom(bird,-bird_movement * 5,1) # * is how fast it animates
-	return new_bird
-
+    
+def rotation(crypto):
+	newcrypto = pygame.transform.rotozoom(crypto,-crypto_moves * 5,1) # * is how fast it animates
+	return newcrypto
     #animation work by having multiple in a list and cycling throught them
-def bird_animation():
-	new_bird = bird_frames[bird_index]
-	new_bird_rect = new_bird.get_rect(center = (100,bird_rect.centery))
-	return new_bird,new_bird_rect 
-
+def animation_crypto_char():
+	newcrypto = crypto_list_items[index]
+	new_rect_item = newcrypto.get_rect(center = (100,rect_item.centery))
+	return newcrypto,new_rect_item 
 def score_display(game_state):
     if game_state == 'main_game':
         score_surface = game_font.render(str(int(score)),True,(255,255,255)) #colour of text
         score_rect = score_surface.get_rect(center = (288,100))
         screen.blit(score_surface,score_rect)
-    if game_state =='game_over':
-        score_surface = game_font.render(f'Score: {int(score)}',True,(255,255,255)) #colour of text
-        score_rect = score_surface.get_rect(center = (288,100))
-        screen.blit(score_surface,score_rect)
-
-        high_score_surface = game_font.render(f' High score: {int(high_score)}',True,(255,255,255)) #colour of text
-        high_score_rect = high_score_surface.get_rect(center = (288,850))
-        screen.blit(high_score_surface,high_score_rect)
-
-def update_score(score,high_score):
-    if score > high_score:
-        high_score = score
-    return high_score
-
 pygame.init()
-screen = pygame.display.set_mode((576,1024)) #screen
+width, height = 576 ,1024
+screen = pygame.display.set_mode((width,height)) #screen
 clock = pygame.time.Clock() # this just helps limit frame rate
-game_font = pygame.font.Font('04B_19.TTF',40)
+game_font = pygame.font.Font('04B_19.TTF',50)
 # variables
-gravity = 0.4
-bird_movement = 0
-game_active = True
-score = 0
-high_score = 0
-
-bg_surface = pygame.image.load('assets/background-crypto-2.png').convert()
-bg_surface = pygame.transform.scale2x(bg_surface)
-
+gravity = 0.4;crypto_moves = 0;game_active = True;score = 0;high_score = 0
+background = pygame.image.load('assets/background-crypto-2.png').convert()
+background = pygame.transform.scale2x(background)
 floor_surface = pygame.image.load('assets/base.png').convert()
 floor_surface = pygame.transform.scale2x(floor_surface)
-floor_x_pos = 0
-
+xgroundlocation = 0
 crypto_down = pygame.transform.scale2x(pygame.image.load('assets/up-3.png').convert_alpha())
 crypto_middle = pygame.transform.scale2x(pygame.image.load('assets/mid.png').convert_alpha())
 crypto_up = pygame.transform.scale2x(pygame.image.load('assets/down.png').convert_alpha())
-bird_frames = [crypto_down,crypto_middle,crypto_up]
-bird_index = 0
-bird_surface = bird_frames[bird_index]
-bird_rect = bird_surface.get_rect(center = (100,512))
+crypto_list_items = [crypto_down,crypto_middle,crypto_up]
+index = 0;surf = crypto_list_items[index]
+rect_item = surf.get_rect(center = (100,512))
 
-BIRDFLAP = pygame.USEREVENT + 1
-pygame.time.set_timer(BIRDFLAP,200)
-
-#bird_surface = pygame.image.load('assets/bluebird-midflap.png').convert_alpha()
-#bird_surface = pygame.transform.scale2x(bird_surface)
-#bird_rect = bird_surface.get_rect(center = (100,512))
+crypto_animation_counter = pygame.USEREVENT + 1
+pygame.time.set_timer(crypto_animation_counter,200)
 
 pipe_surface = pygame.image.load('assets/pipe-green.png')
 pipe_surface = pygame.transform.scale2x(pipe_surface)
 pipe_list = []
-SPAWNPIPE = pygame.USEREVENT #triggered by timer
-pygame.time.set_timer(SPAWNPIPE,1200)
+PIPESPAWNER = pygame.USEREVENT #triggered by timer
+pygame.time.set_timer(PIPESPAWNER,1200)
 pipe_height = [400,600,800] #position of pipes
 
 game_over_surface = pygame.transform.scale2x(pygame.image.load('assets/message.png').convert_alpha())
@@ -113,58 +76,65 @@ while True:
         sys.exit()
     if event.type == pygame.KEYDOWN:
         if event.key == pygame.K_SPACE and game_active:
-            bird_movement = 0 #disables gravity momentarily 
-            bird_movement -= 12
+            crypto_moves = 0 #disables gravity momentarily 
+            crypto_moves -= 12
         if event.key == pygame.K_SPACE and game_active == False:
             game_active = True
             pipe_list.clear()
-            bird_rect.center = (100,512)
-            bird_movement=0
+            rect_item.center = (100,512)
+            crypto_moves=0
             score = 0
         if game_active and score>5:
             high_score_surface = game_font.render(f' High score: {int(high_score)}',True,(255,255,255)) #colour of text
             high_score_rect = high_score_surface.get_rect(center = (288,850))
             screen.blit(high_score_surface,high_score_rect)
 
-        if event.type == BIRDFLAP:
-            if bird_index < 2:
-                bird_index += 1
+        if event.type == crypto_animation_counter:
+            if index < 2:
+                index += 1
             else:
-                bird_index = 0
-            bird_surface,bird_Rect = bird_animation()
+                index = 0
+            surf,rect_item = animation_crypto_char()
 
-    if event.type == SPAWNPIPE:
+    if event.type == PIPESPAWNER:
         pipe_list.extend(create_pipe()) # when a tuple is returned
 
   # This block is being always redrawn....
-  screen.blit(bg_surface,(0,0))
+  screen.blit(background,(0,0))
 
   if game_active:
-    bird_movement += gravity # increasing number
-    rotated_bird = rotate_bird(bird_surface)
-    bird_rect.centery += bird_movement
-    screen.blit(rotated_bird,bird_rect)
-    game_active = check_collison(pipe_list)
+    crypto_moves += gravity # increasing number
+    rotated_bird = rotation(surf)
+    rect_item.centery += crypto_moves
+    screen.blit(rotated_bird,rect_item)
+    game_active = collision(pipe_list)
 
     # Pipes
-    pipe_list = move_pipes(pipe_list)
-    draw_pipes(pipe_list)
+
+    for pipe in pipe_list:
+        pipe.centerx -= 5
+        pipes(pipe_list)
 
     score += 0.01
-    score_display('main_game')
+
+    if 'main_game' == 'main_game':
+        score_surface = game_font.render(str(int(score)),True,(255,255,255)) #colour of text
+        score_rect = score_surface.get_rect(center = (288,100))
+        screen.blit(score_surface,score_rect)
   else:
       screen.blit(game_over_surface,game_over_rect)
-      high_score = update_score(score,high_score)
-      score_display('game_over')
+
   #Floor
-  floor_x_pos -=5
-  if floor_x_pos > 0:
-      floor_x_pos = 10
+  xgroundlocation -=5
+  if xgroundlocation > 0:
+      xgroundlocation = 10
   # This just has two floors and when floor is too far off, change in x axis
-  draw_floor()
-  if floor_x_pos <= - 576:
-      floor_x_pos = 0
+  screen.blit(floor_surface,(xgroundlocation,900))
+  screen.blit(floor_surface,(xgroundlocation+576,900))
+  if xgroundlocation <= - width:
+      xgroundlocation = 0
    # puts a surface on another surface
   pygame.display.update()
   
-  clock.tick(100) #can only run under 120 fps
+  clock.tick(100) #can only run under 120 fps properly
+#pygame.quit() weird error, will fix later
