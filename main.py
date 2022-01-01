@@ -9,7 +9,7 @@ def draw_floor():
 def create_pipe():
     random_pipe_position = random.choice(pipe_height)
     bottom_pipe = pipe_surface.get_rect(midtop = (700,random_pipe_position))
-    top_pipe =pipe_surface.get_rect(midbottom=(700,random_pipe_position-300))
+    top_pipe =pipe_surface.get_rect(midbottom=(700,random_pipe_position-400)) # the minus is the gap between the two tunnels
     return bottom_pipe,top_pipe
 
 def move_pipes(pipes):
@@ -36,9 +36,10 @@ def check_collison(pipes):
 
 
 def rotate_bird(bird):
-	new_bird = pygame.transform.rotozoom(bird,-bird_movement * 5,1) # *% is how fast it animates
+	new_bird = pygame.transform.rotozoom(bird,-bird_movement * 5,1) # * is how fast it animates
 	return new_bird
 
+    #animation work by having multiple in a list and cycling throught them
 def bird_animation():
 	new_bird = bird_frames[bird_index]
 	new_bird_rect = new_bird.get_rect(center = (100,bird_rect.centery))
@@ -81,10 +82,10 @@ floor_surface = pygame.image.load('assets/base.png').convert()
 floor_surface = pygame.transform.scale2x(floor_surface)
 floor_x_pos = 0
 
-bird_downflap = pygame.transform.scale2x(pygame.image.load('assets/up-3.png').convert_alpha())
-bird_midflap = pygame.transform.scale2x(pygame.image.load('assets/mid.png').convert_alpha())
-bird_upflap = pygame.transform.scale2x(pygame.image.load('assets/down.png').convert_alpha())
-bird_frames = [bird_downflap,bird_midflap,bird_upflap]
+crypto_down = pygame.transform.scale2x(pygame.image.load('assets/up-3.png').convert_alpha())
+crypto_middle = pygame.transform.scale2x(pygame.image.load('assets/mid.png').convert_alpha())
+crypto_up = pygame.transform.scale2x(pygame.image.load('assets/down.png').convert_alpha())
+bird_frames = [crypto_down,crypto_middle,crypto_up]
 bird_index = 0
 bird_surface = bird_frames[bird_index]
 bird_rect = bird_surface.get_rect(center = (100,512))
@@ -108,8 +109,8 @@ game_over_rect = game_over_surface.get_rect(center=(288,512))
 while True:
   for event in pygame.event.get():  #Looking for all event that are happening (clicking keys)
     if event.type == pygame.QUIT: #or game_active== False:
-      pygame.quit()
-      sys.exit()
+        pygame.quit()
+        sys.exit()
     if event.type == pygame.KEYDOWN:
         if event.key == pygame.K_SPACE and game_active:
             bird_movement = 0 #disables gravity momentarily 
@@ -120,7 +121,10 @@ while True:
             bird_rect.center = (100,512)
             bird_movement=0
             score = 0
-
+        if game_active and score>5:
+            high_score_surface = game_font.render(f' High score: {int(high_score)}',True,(255,255,255)) #colour of text
+            high_score_rect = high_score_surface.get_rect(center = (288,850))
+            screen.blit(high_score_surface,high_score_rect)
 
         if event.type == BIRDFLAP:
             if bird_index < 2:
@@ -130,7 +134,7 @@ while True:
             bird_surface,bird_Rect = bird_animation()
 
     if event.type == SPAWNPIPE:
-        pipe_list.extend(create_pipe())
+        pipe_list.extend(create_pipe()) # when a tuple is returned
 
   # This block is being always redrawn....
   screen.blit(bg_surface,(0,0))
@@ -162,5 +166,5 @@ while True:
       floor_x_pos = 0
    # puts a surface on another surface
   pygame.display.update()
-  fps=80
-  clock.tick(fps + 10) #can only run under 120 fps
+  
+  clock.tick(100) #can only run under 120 fps
