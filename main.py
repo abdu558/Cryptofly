@@ -8,6 +8,8 @@ def create_pipe():
     top_pipe =pipe_surface.get_rect(midbottom=(700,random_pipe_position-400)) # the minus is the gap between the two tunnels
     return bottom_pipe,top_pipe
 
+
+
 def pipes(pipes):
     for pipe in pipes:
         if pipe.bottom >=1024:
@@ -50,7 +52,7 @@ background = pygame.transform.scale2x(background)
 floor_surface = pygame.image.load('assets/base.png').convert()
 floor_surface = pygame.transform.scale2x(floor_surface)
 xgroundlocation = 0
-crypto_down = pygame.transform.scale2x(pygame.image.load('assets/up-3.png').convert_alpha())
+crypto_down = pygame.transform.scale2x(pygame.image.load('assets/up.png').convert_alpha())
 crypto_middle = pygame.transform.scale2x(pygame.image.load('assets/mid.png').convert_alpha())
 crypto_up = pygame.transform.scale2x(pygame.image.load('assets/down.png').convert_alpha())
 crypto_list_items = [crypto_down,crypto_middle,crypto_up]
@@ -114,6 +116,7 @@ while True:
     for pipe in pipe_list:
         pipe.centerx -= 5
         pipes(pipe_list)
+    
 
     score += 0.01
 
